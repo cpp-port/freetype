@@ -1,0 +1,44 @@
+﻿  ANDROID_HOME=C:\\Microsoft\AndroidSDK\25
+  ANT_HOME=C:\Program Files\Microsoft Visual Studio\2022\Community\Apps\apache-ant-1.9.3
+  JAVA_HOME=C:\Program Files\Android\jdk\jdk-8.0.302.8-hotspot\jdk8u302-b08
+  NDK_ROOT=C:\archive\android-ndk-r23b
+  ftbbox.c
+  ft2build.c
+  ftbitmap.c
+src\base\ftbbox.c(27,10): fatal error : 'ft2build.h' file not found
+  #include <ft2build.h>
+           ^~~~~~~~~~~~
+  1 error generated.
+ft2build.c(5,10): fatal error : 'ft2build.h' file not found
+  #include <ft2build.h>
+           ^~~~~~~~~~~~
+  1 error generated.
+src\base\ftbitmap.c(19,10): fatal error : 'ft2build.h' file not found
+  #include <ft2build.h>
+           ^~~~~~~~~~~~
+  1 error generated.
+  autofit.c
+src\autofit\autofit.c(20,10): fatal error : 'ft2build.h' file not found
+  #include <ft2build.h>
+           ^~~~~~~~~~~~
+  1 error generated.
+  ftbdf.c
+src\base\ftbdf.c(19,10): fatal error : 'ft2build.h' file not found
+  #include <ft2build.h>
+           ^~~~~~~~~~~~
+  1 error generated.
+  ftdbgmem.c
+src\base\ftdbgmem.c(19,10): fatal error : 'ft2build.h' file not found
+  #include <ft2build.h>
+           ^~~~~~~~~~~~
+  1 error generated.
+  ftcid.c
+src\base\ftcid.c(19,10): fatal error : 'ft2build.h' file not found
+  #include <ft2build.h>
+           ^~~~~~~~~~~~
+  1 error generated.
+  ftbase.c
+src\base\ftbase.c(19,10): fatal error : 'ft2build.h' file not found
+  #include <ft2build.h>
+           ^~~~~~~~~~~~
+  1 error generated.
