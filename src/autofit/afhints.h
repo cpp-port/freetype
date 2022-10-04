@@ -414,8 +414,8 @@ FT_BEGIN_HEADER
 
 
   FT_LOCAL( AF_Direction )
-  af_direction_compute( FT_Pos  dx,
-                        FT_Pos  dy );
+  af_direction_compute( FT_Pos  Δx,
+                        FT_Pos  Δy );
 
 
   FT_LOCAL( FT_Error )

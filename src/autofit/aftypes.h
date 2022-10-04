@@ -121,8 +121,8 @@ extern void*  _af_debug_hints;
    * compute the angle of a given 2-D vector
    */
   FT_LOCAL( AF_Angle )
-  af_angle_atan( FT_Pos  dx,
-                 FT_Pos  dy );
+  af_angle_atan( FT_Pos  Δx,
+                 FT_Pos  Δy );
 
 
   /*
