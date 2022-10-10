@@ -1,4 +1,4 @@
-/****************************************************************************
+﻿/****************************************************************************
  *
  * afhints.h
  *
@@ -414,8 +414,8 @@ FT_BEGIN_HEADER
 
 
   FT_LOCAL( AF_Direction )
-  af_direction_compute( FT_Pos  Δx,
-                        FT_Pos  Δy );
+  af_direction_compute( FT_Pos  dx,
+                        FT_Pos  dy );
 
 
   FT_LOCAL( FT_Error )

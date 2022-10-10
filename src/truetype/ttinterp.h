@@ -1,4 +1,4 @@
-/****************************************************************************
+﻿/****************************************************************************
  *
  * ttinterp.h
  *
@@ -64,8 +64,8 @@ FT_BEGIN_HEADER
   /* Distance projection along one of the projection vectors */
   typedef FT_F26Dot6
   (*TT_Project_Func)( TT_ExecContext  exc,
-                      FT_Pos          Δx,
-                      FT_Pos          Δy );
+                      FT_Pos          dx,
+                      FT_Pos          dy );
 
   /* getting current ppem.  Take care of non-square pixels if necessary */
   typedef FT_Long
