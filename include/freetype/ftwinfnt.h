@@ -84,7 +84,7 @@ FT_BEGIN_HEADER
    *     `roman.fon`, and `script.fon` on Windows.
    *
    *     The 'CreateFont' documentation says: The `FT_WinFNT_ID_OEM` value
-   *     specifies a character set that is operating-system dependent.
+   *     specifies a character set that is operating_system dependent.
    *
    *     The 'IFIMETRICS' documentation from the 'Windows Driver Development
    *     Kit' says: This font supports an OEM-specific character set.  The
