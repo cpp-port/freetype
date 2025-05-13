@@ -98,6 +98,7 @@
 # to hide all other symbols. CMake supports a C_VISBILITY_PRESET property
 # starting with 2.8.12.
 cmake_minimum_required(VERSION 2.8.12)
+project(freetype C)
 
 if (NOT CMAKE_VERSION VERSION_LESS 3.3)
   # Allow symbol visibility settings also on static libraries. CMake < 3.3
@@ -143,7 +144,7 @@ else ()
 endif ()
 
 
-project(freetype C)
+
 
 set(VERSION_MAJOR "2")
 set(VERSION_MINOR "10")
@@ -212,13 +213,17 @@ else ()
   find_package(HarfBuzz ${HARFBUZZ_MIN_VERSION})
 endif ()
 
-if (FT_WITH_PNG)
+if(FT_WITH_PNG_PORT)
+  list(APPEND this_system_libraries png)
+elseif (FT_WITH_PNG)
   find_package(PNG REQUIRED)
 else ()
   find_package(PNG)
 endif ()
 
-if (FT_WITH_ZLIB)
+if(FT_WITH_SYSTEM_Z)
+  list(APPEND this_system_libraries z)
+elseif (FT_WITH_ZLIB)
   find_package(ZLIB REQUIRED)
 else ()
   find_package(ZLIB)
@@ -477,105 +482,109 @@ if (BROTLIDEC_FOUND)
   list(APPEND PKG_CONFIG_REQUIRED_PRIVATE "libbrotlidec")
 endif ()
 
+if(${this_system_libraries})
+  target_link_libraries(freetype PRIVATE ${this_system_libraries})
+endif()
 
-# Installation
-include(GNUInstallDirs)
+#
+## Installation
+#include(GNUInstallDirs)
+#
+#if (NOT SKIP_INSTALL_HEADERS AND NOT SKIP_INSTALL_ALL)
+#  install(
+#    # Note the trailing slash in the argument to `DIRECTORY'!
+#    DIRECTORY ${PROJECT_SOURCE_DIR}/include/
+#      DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/freetype2
+#      COMPONENT headers
+#      PATTERN "internal" EXCLUDE
+#      PATTERN "ftconfig.h" EXCLUDE
+#      PATTERN "ftoption.h" EXCLUDE)
+#  install(
+#    FILES ${PROJECT_BINARY_DIR}/include/freetype/config/ftconfig.h
+#          ${PROJECT_BINARY_DIR}/include/freetype/config/ftoption.h
+#      DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/freetype2/freetype/config
+#      COMPONENT headers)
+#endif ()
+#
+#if (NOT SKIP_INSTALL_LIBRARIES AND NOT SKIP_INSTALL_ALL)
+#  # Generate the pkg-config file
+#  if (UNIX)
+#    file(READ "${PROJECT_SOURCE_DIR}/builds/unix/freetype2.in" FREETYPE2_PC_IN)
+#
+#    string(REPLACE ";" ", " PKG_CONFIG_REQUIRED_PRIVATE "${PKG_CONFIG_REQUIRED_PRIVATE}")
+#
+#    string(REPLACE "%prefix%" ${CMAKE_INSTALL_PREFIX}
+#           FREETYPE2_PC_IN ${FREETYPE2_PC_IN})
+#    string(REPLACE "%exec_prefix%" "\${prefix}"
+#           FREETYPE2_PC_IN ${FREETYPE2_PC_IN})
+#    string(REPLACE "%libdir%" "\${prefix}/${CMAKE_INSTALL_LIBDIR}"
+#           FREETYPE2_PC_IN ${FREETYPE2_PC_IN})
+#    string(REPLACE "%includedir%" "\${prefix}/${CMAKE_INSTALL_INCLUDEDIR}"
+#           FREETYPE2_PC_IN ${FREETYPE2_PC_IN})
+#    string(REPLACE "%ft_version%" "${LIBTOOL_CURRENT}.${LIBTOOL_REVISION}.${LIBTOOL_AGE}"
+#           FREETYPE2_PC_IN ${FREETYPE2_PC_IN})
+#    string(REPLACE "%REQUIRES_PRIVATE%" "${PKG_CONFIG_REQUIRED_PRIVATE}"
+#           FREETYPE2_PC_IN ${FREETYPE2_PC_IN})
+#    string(REPLACE "%LIBS_PRIVATE%" ""  # All libs support pkg-config
+#           FREETYPE2_PC_IN ${FREETYPE2_PC_IN})
+#
+#    set(FREETYPE2_PC_IN_NAME "${PROJECT_BINARY_DIR}/freetype2.pc")
+#    if (EXISTS "${FREETYPE2_PC_IN_NAME}")
+#      file(READ "${FREETYPE2_PC_IN_NAME}" ORIGINAL_FREETYPE2_PC_IN)
+#    else ()
+#      set(ORIGINAL_FREETYPE2_PC_IN "")
+#    endif ()
+#    if (NOT (ORIGINAL_FREETYPE2_PC_IN STREQUAL FREETYPE2_PC_IN))
+#      file(WRITE "${FREETYPE2_PC_IN_NAME}" ${FREETYPE2_PC_IN})
+#    endif ()
+#
+#    install(
+#      FILES ${PROJECT_BINARY_DIR}/freetype2.pc
+#      DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
+#      COMPONENT pkgconfig)
+#  endif ()
+#
+#  install(
+#    TARGETS freetype
+#      EXPORT freetype-targets
+#      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+#      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+#      RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+#      FRAMEWORK DESTINATION Library/Frameworks
+#      COMPONENT libraries)
+#  install(
+#    EXPORT freetype-targets
+#      DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/freetype
+#      FILE freetype-config.cmake
+#      COMPONENT headers)
+#endif ()
+#
 
-if (NOT SKIP_INSTALL_HEADERS AND NOT SKIP_INSTALL_ALL)
-  install(
-    # Note the trailing slash in the argument to `DIRECTORY'!
-    DIRECTORY ${PROJECT_SOURCE_DIR}/include/
-      DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/freetype2
-      COMPONENT headers
-      PATTERN "internal" EXCLUDE
-      PATTERN "ftconfig.h" EXCLUDE
-      PATTERN "ftoption.h" EXCLUDE)
-  install(
-    FILES ${PROJECT_BINARY_DIR}/include/freetype/config/ftconfig.h
-          ${PROJECT_BINARY_DIR}/include/freetype/config/ftoption.h
-      DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/freetype2/freetype/config
-      COMPONENT headers)
-endif ()
-
-if (NOT SKIP_INSTALL_LIBRARIES AND NOT SKIP_INSTALL_ALL)
-  # Generate the pkg-config file
-  if (UNIX)
-    file(READ "${PROJECT_SOURCE_DIR}/builds/unix/freetype2.in" FREETYPE2_PC_IN)
-
-    string(REPLACE ";" ", " PKG_CONFIG_REQUIRED_PRIVATE "${PKG_CONFIG_REQUIRED_PRIVATE}")
-
-    string(REPLACE "%prefix%" ${CMAKE_INSTALL_PREFIX}
-           FREETYPE2_PC_IN ${FREETYPE2_PC_IN})
-    string(REPLACE "%exec_prefix%" "\${prefix}"
-           FREETYPE2_PC_IN ${FREETYPE2_PC_IN})
-    string(REPLACE "%libdir%" "\${prefix}/${CMAKE_INSTALL_LIBDIR}"
-           FREETYPE2_PC_IN ${FREETYPE2_PC_IN})
-    string(REPLACE "%includedir%" "\${prefix}/${CMAKE_INSTALL_INCLUDEDIR}"
-           FREETYPE2_PC_IN ${FREETYPE2_PC_IN})
-    string(REPLACE "%ft_version%" "${LIBTOOL_CURRENT}.${LIBTOOL_REVISION}.${LIBTOOL_AGE}"
-           FREETYPE2_PC_IN ${FREETYPE2_PC_IN})
-    string(REPLACE "%REQUIRES_PRIVATE%" "${PKG_CONFIG_REQUIRED_PRIVATE}"
-           FREETYPE2_PC_IN ${FREETYPE2_PC_IN})
-    string(REPLACE "%LIBS_PRIVATE%" ""  # All libs support pkg-config
-           FREETYPE2_PC_IN ${FREETYPE2_PC_IN})
-
-    set(FREETYPE2_PC_IN_NAME "${PROJECT_BINARY_DIR}/freetype2.pc")
-    if (EXISTS "${FREETYPE2_PC_IN_NAME}")
-      file(READ "${FREETYPE2_PC_IN_NAME}" ORIGINAL_FREETYPE2_PC_IN)
-    else ()
-      set(ORIGINAL_FREETYPE2_PC_IN "")
-    endif ()
-    if (NOT (ORIGINAL_FREETYPE2_PC_IN STREQUAL FREETYPE2_PC_IN))
-      file(WRITE "${FREETYPE2_PC_IN_NAME}" ${FREETYPE2_PC_IN})
-    endif ()
-
-    install(
-      FILES ${PROJECT_BINARY_DIR}/freetype2.pc
-      DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
-      COMPONENT pkgconfig)
-  endif ()
-
-  install(
-    TARGETS freetype
-      EXPORT freetype-targets
-      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-      RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-      FRAMEWORK DESTINATION Library/Frameworks
-      COMPONENT libraries)
-  install(
-    EXPORT freetype-targets
-      DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/freetype
-      FILE freetype-config.cmake
-      COMPONENT headers)
-endif ()
-
-
-# Packaging
-set(CPACK_PACKAGE_NAME ${CMAKE_PROJECT_NAME})
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "The FreeType font rendering library.")
-set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README")
-set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/docs/LICENSE.TXT")
-
-set(CPACK_PACKAGE_VERSION_MAJOR ${VERSION_MAJOR})
-set(CPACK_PACKAGE_VERSION_MINOR ${VERSION_MINOR})
-set(CPACK_PACKAGE_VERSION_PATCH ${VERSION_PATCH})
-set(CPACK_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
-
-if (WIN32)
-  set(CPACK_GENERATOR ZIP)
-else ()
-  set(CPACK_GENERATOR TGZ)
-endif ()
-
-set(CPACK_COMPONENT_LIBRARIES_DISPLAY_NAME "Libraries")
-set(CPACK_COMPONENT_HEADERS_DISPLAY_NAME "C/C++ Headers")
-set(CPACK_COMPONENT_LIBRARIES_DESCRIPTION
-  "Library used to build programs which use FreeType")
-set(CPACK_COMPONENT_HEADERS_DESCRIPTION
-  "C/C++ header files for use with FreeType")
-set(CPACK_COMPONENT_HEADERS_DEPENDS libraries)
-set(CPACK_COMPONENT_LIBRARIES_GROUP "Development")
-set(CPACK_COMPONENT_HEADERS_GROUP "Development")
-
-include(CPack)
+## Packaging
+#set(CPACK_PACKAGE_NAME ${CMAKE_PROJECT_NAME})
+#set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "The FreeType font rendering library.")
+#set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README")
+#set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/docs/LICENSE.TXT")
+#
+#set(CPACK_PACKAGE_VERSION_MAJOR ${VERSION_MAJOR})
+#set(CPACK_PACKAGE_VERSION_MINOR ${VERSION_MINOR})
+#set(CPACK_PACKAGE_VERSION_PATCH ${VERSION_PATCH})
+#set(CPACK_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
+#
+#if (WIN32)
+#  set(CPACK_GENERATOR ZIP)
+#else ()
+#  set(CPACK_GENERATOR TGZ)
+#endif ()
+#
+#set(CPACK_COMPONENT_LIBRARIES_DISPLAY_NAME "Libraries")
+#set(CPACK_COMPONENT_HEADERS_DISPLAY_NAME "C/C++ Headers")
+#set(CPACK_COMPONENT_LIBRARIES_DESCRIPTION
+#  "Library used to build programs which use FreeType")
+#set(CPACK_COMPONENT_HEADERS_DESCRIPTION
+#  "C/C++ header files for use with FreeType")
+#set(CPACK_COMPONENT_HEADERS_DEPENDS libraries)
+#set(CPACK_COMPONENT_LIBRARIES_GROUP "Development")
+#set(CPACK_COMPONENT_HEADERS_GROUP "Development")
+#
+#include(CPack)
