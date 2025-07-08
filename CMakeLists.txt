@@ -149,97 +149,97 @@ endif ()
 set(VERSION_MAJOR "2")
 set(VERSION_MINOR "10")
 set(VERSION_PATCH "2")
+#
+## Generate LIBRARY_VERSION and LIBRARY_SOVERSION.
+#set(LIBTOOL_REGEX "version_info='([0-9]+):([0-9]+):([0-9]+)'")
+#file(STRINGS "${PROJECT_SOURCE_DIR}/builds/unix/configure.raw"
+#  VERSION_INFO
+#  REGEX ${LIBTOOL_REGEX})
+#string(REGEX REPLACE
+#  ${LIBTOOL_REGEX} "\\1"
+#  LIBTOOL_CURRENT "${VERSION_INFO}")
+#string(REGEX REPLACE
+#  ${LIBTOOL_REGEX} "\\2"
+#  LIBTOOL_REVISION "${VERSION_INFO}")
+#string(REGEX REPLACE
+#  ${LIBTOOL_REGEX} "\\3"
+#  LIBTOOL_AGE "${VERSION_INFO}")
 
-# Generate LIBRARY_VERSION and LIBRARY_SOVERSION.
-set(LIBTOOL_REGEX "version_info='([0-9]+):([0-9]+):([0-9]+)'")
-file(STRINGS "${PROJECT_SOURCE_DIR}/builds/unix/configure.raw"
-  VERSION_INFO
-  REGEX ${LIBTOOL_REGEX})
-string(REGEX REPLACE
-  ${LIBTOOL_REGEX} "\\1"
-  LIBTOOL_CURRENT "${VERSION_INFO}")
-string(REGEX REPLACE
-  ${LIBTOOL_REGEX} "\\2"
-  LIBTOOL_REVISION "${VERSION_INFO}")
-string(REGEX REPLACE
-  ${LIBTOOL_REGEX} "\\3"
-  LIBTOOL_AGE "${VERSION_INFO}")
-
-# This is what libtool does internally on Unix platforms.
-math(EXPR LIBRARY_SOVERSION "${LIBTOOL_CURRENT} - ${LIBTOOL_AGE}")
-set(LIBRARY_VERSION "${LIBRARY_SOVERSION}.${LIBTOOL_AGE}.${LIBTOOL_REVISION}")
-
-# External dependency library detection is automatic. See the notes at the top
-# of this file, for how to force or disable dependencies completely.
-option(FT_WITH_ZLIB "Use system zlib instead of internal library." OFF)
-option(FT_WITH_BZIP2 "Support bzip2 compressed fonts." OFF)
-option(FT_WITH_PNG "Support PNG compressed OpenType embedded bitmaps." OFF)
-option(FT_WITH_HARFBUZZ "Improve auto-hinting of OpenType fonts." OFF)
-option(FT_WITH_BROTLI "Support compressed WOFF2 fonts." OFF)
-
-
-# Disallow in-source builds
-if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
-  message(FATAL_ERROR
-    "In-source builds are not permitted!  Make a separate folder for"
-    " building, e.g.,\n"
-    "  cmake -E make_directory build\n"
-    "  cmake -E chdir build cmake ..\n"
-    "Before that, remove the files created by this failed run with\n"
-    "  cmake -E remove CMakeCache.txt\n"
-    "  cmake -E remove_directory CMakeFiles")
-endif ()
-
-
-# Add local cmake modules
-list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/builds/cmake)
-
-
-if (BUILD_FRAMEWORK)
-  if (NOT "${CMAKE_GENERATOR}" STREQUAL "Xcode")
-    message(FATAL_ERROR
-      "You should use Xcode generator with BUILD_FRAMEWORK enabled")
-  endif ()
-  set(CMAKE_OSX_ARCHITECTURES "$(ARCHS_STANDARD_32_64_BIT)")
-  set(BUILD_SHARED_LIBS ON)
-endif ()
-
-
-# Find dependencies
-set(HARFBUZZ_MIN_VERSION "1.8.0")
-if (FT_WITH_HARFBUZZ)
-  find_package(HarfBuzz ${HARFBUZZ_MIN_VERSION} REQUIRED)
-else ()
-  find_package(HarfBuzz ${HARFBUZZ_MIN_VERSION})
-endif ()
-
-if(FT_WITH_PNG_PORT)
-  list(APPEND this_system_libraries png)
-elseif (FT_WITH_PNG)
-  find_package(PNG REQUIRED)
-else ()
-  find_package(PNG)
-endif ()
-
-if(FT_WITH_SYSTEM_Z)
-  list(APPEND this_system_libraries z)
-elseif (FT_WITH_ZLIB)
-  find_package(ZLIB REQUIRED)
-else ()
-  find_package(ZLIB)
-endif ()
-
-if (FT_WITH_BZIP2)
-  find_package(BZip2 REQUIRED)
-else ()
-  find_package(BZip2)
-endif ()
-
-if (FT_WITH_BROTLI)
-  find_package(BrotliDec REQUIRED)
-else ()
-  find_package(BrotliDec)
-endif ()
+## This is what libtool does internally on Unix platforms.
+#math(EXPR LIBRARY_SOVERSION "${LIBTOOL_CURRENT} - ${LIBTOOL_AGE}")
+#set(LIBRARY_VERSION "${LIBRARY_SOVERSION}.${LIBTOOL_AGE}.${LIBTOOL_REVISION}")
+#
+## External dependency library detection is automatic. See the notes at the top
+## of this file, for how to force or disable dependencies completely.
+#option(FT_WITH_ZLIB "Use system zlib instead of internal library." OFF)
+#option(FT_WITH_BZIP2 "Support bzip2 compressed fonts." OFF)
+#option(FT_WITH_PNG "Support PNG compressed OpenType embedded bitmaps." OFF)
+#option(FT_WITH_HARFBUZZ "Improve auto-hinting of OpenType fonts." OFF)
+#option(FT_WITH_BROTLI "Support compressed WOFF2 fonts." OFF)
+#
+#
+## Disallow in-source builds
+#if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
+#  message(FATAL_ERROR
+#    "In-source builds are not permitted!  Make a separate folder for"
+#    " building, e.g.,\n"
+#    "  cmake -E make_directory build\n"
+#    "  cmake -E chdir build cmake ..\n"
+#    "Before that, remove the files created by this failed run with\n"
+#    "  cmake -E remove CMakeCache.txt\n"
+#    "  cmake -E remove_directory CMakeFiles")
+#endif ()
+#
+#
+## Add local cmake modules
+#list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/builds/cmake)
+#
+#
+#if (BUILD_FRAMEWORK)
+#  if (NOT "${CMAKE_GENERATOR}" STREQUAL "Xcode")
+#    message(FATAL_ERROR
+#      "You should use Xcode generator with BUILD_FRAMEWORK enabled")
+#  endif ()
+#  set(CMAKE_OSX_ARCHITECTURES "$(ARCHS_STANDARD_32_64_BIT)")
+#  set(BUILD_SHARED_LIBS ON)
+#endif ()
+#
+#
+## Find dependencies
+#set(HARFBUZZ_MIN_VERSION "1.8.0")
+#if (FT_WITH_HARFBUZZ)
+#  find_package(HarfBuzz ${HARFBUZZ_MIN_VERSION} REQUIRED)
+#else ()
+#  find_package(HarfBuzz ${HARFBUZZ_MIN_VERSION})
+#endif ()
+#
+#if(FT_WITH_PNG_PORT)
+#  list(APPEND this_system_libraries png)
+#elseif (FT_WITH_PNG)
+#  find_package(PNG REQUIRED)
+#else ()
+#  find_package(PNG)
+#endif ()
+#
+#if(FT_WITH_SYSTEM_Z)
+#  list(APPEND this_system_libraries z)
+#elseif (FT_WITH_ZLIB)
+#  find_package(ZLIB REQUIRED)
+#else ()
+#  find_package(ZLIB)
+#endif ()
+#
+#if (FT_WITH_BZIP2)
+#  find_package(BZip2 REQUIRED)
+#else ()
+#  find_package(BZip2)
+#endif ()
+#
+#if (FT_WITH_BROTLI)
+#  find_package(BrotliDec REQUIRED)
+#else ()
+#  find_package(BrotliDec)
+#endif ()
 
 # Create the configuration file
 if (UNIX)
