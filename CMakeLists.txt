@@ -387,6 +387,10 @@ if(${this_system_libraries})
   target_link_libraries(freetype PRIVATE ${this_system_libraries})
 endif()
 
+
+if(${ANDROID})
+  target_link_libraries(${PROJECT_NAME} PRIVATE log)
+endif()
 #
 ## Installation
 #include(GNUInstallDirs)
