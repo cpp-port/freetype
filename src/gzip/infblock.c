@@ -81,7 +81,9 @@ uLongf *c )
   s->read = s->write = s->window;
   if (s->checkfn != Z_NULL)
     z->adler = s->check = (*s->checkfn)(0L, (const Bytef *)Z_NULL, 0);
+#if !defined(__ANDROID__)
   Tracev((stderr, "inflate:   blocks reset\n"));
+#endif
 }
 
 
@@ -110,7 +112,10 @@ uInt w )
   s->end = s->window + w;
   s->checkfn = c;
   s->mode = TYPE;
+#if !defined(__ANDROID__)
+
   Tracev((stderr, "inflate:   blocks allocated\n"));
+#endif
   inflate_blocks_reset(s, z, Z_NULL);
   return s;
 }
@@ -142,16 +147,22 @@ int r )
       switch (t >> 1)
       {
         case 0:                         /* stored */
-          Tracev((stderr, "inflate:     stored block%s\n",
+#if !defined(__ANDROID__)
+
+Tracev((stderr, "inflate:     stored block%s\n",
                  s->last ? " (last)" : ""));
+#endif
           DUMPBITS(3)
           t = k & 7;                    /* go to byte boundary */
           DUMPBITS(t)
           s->mode = LENS;               /* get length of stored block */
           break;
         case 1:                         /* fixed */
-          Tracev((stderr, "inflate:     fixed codes block%s\n",
+#if !defined(__ANDROID__)
+
+Tracev((stderr, "inflate:     fixed codes block%s\n",
                  s->last ? " (last)" : ""));
+#endif
           {
             uInt bl, bd;
             inflate_huft *tl, *td;
@@ -169,8 +180,11 @@ int r )
           s->mode = CODES;
           break;
         case 2:                         /* dynamic */
-          Tracev((stderr, "inflate:     dynamic codes block%s\n",
+#if !defined(__ANDROID__)
+
+Tracev((stderr, "inflate:     dynamic codes block%s\n",
                  s->last ? " (last)" : ""));
+#endif
           DUMPBITS(3)
           s->mode = TABLE;
           break;
@@ -193,7 +207,10 @@ int r )
       }
       s->sub.left = (uInt)b & 0xffff;
       b = k = 0;                      /* dump bits */
+#if !defined(__ANDROID__)
+
       Tracev((stderr, "inflate:       stored length %u\n", s->sub.left));
+#endif
       s->mode = s->sub.left ? STORED : (s->last ? DRY : TYPE);
       break;
     case STORED:
@@ -208,9 +225,12 @@ int r )
       q += t;  m -= t;
       if ((s->sub.left -= t) != 0)
         break;
+#if !defined(__ANDROID__)
+
       Tracev((stderr, "inflate:       stored end, %lu total out\n",
               z->total_out + (q >= s->read ? q - s->read :
               (s->end - s->read) + (q - s->window))));
+#endif
       s->mode = s->last ? DRY : TYPE;
       break;
     case TABLE:
@@ -233,7 +253,10 @@ int r )
       }
       DUMPBITS(14)
       s->sub.trees.index = 0;
+#if !defined(__ANDROID__)
+
       Tracev((stderr, "inflate:       table sizes ok\n"));
+#endif
       s->mode = BTREE;
       /* fall through */
     case BTREE:
@@ -259,7 +282,10 @@ int r )
         LEAVE
       }
       s->sub.trees.index = 0;
+#if !defined(__ANDROID__)
+
       Tracev((stderr, "inflate:       bits tree ok\n"));
+#endif
       s->mode = DTREE;
       /* fall through */
     case DTREE:
@@ -327,7 +353,10 @@ int r )
           r = t;
           LEAVE
         }
-        Tracev((stderr, "inflate:       trees ok\n"));
+#if !defined(__ANDROID__)
+
+            Tracev((stderr, "inflate:       trees ok\n"));
+#endif
         if ((c = inflate_codes_new(bl, bd, tl, td, z)) == Z_NULL)
         {
           r = Z_MEM_ERROR;
@@ -345,9 +374,12 @@ int r )
       r = Z_OK;
       inflate_codes_free(s->sub.decode.codes, z);
       LOAD
+#if !defined(__ANDROID__)
+
       Tracev((stderr, "inflate:       codes end, %lu total out\n",
               z->total_out + (q >= s->read ? q - s->read :
               (s->end - s->read) + (q - s->window))));
+#endif
       if (!s->last)
       {
         s->mode = TYPE;
@@ -385,7 +417,10 @@ z_streamp z )
   ZFREE(z, s->window);
   ZFREE(z, s->hufts);
   ZFREE(z, s);
+#if !defined(__ANDROID__)
+
   Tracev((stderr, "inflate:   blocks freed\n"));
+#endif
   return Z_OK;
 }
 

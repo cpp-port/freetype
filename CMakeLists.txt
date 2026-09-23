@@ -275,7 +275,7 @@ else ()
   list(APPEND BASE_SRCS "src/base/ftsystem.c")
 endif ()
 
-if (WIN32 AND NOT ANDROID)
+if (WIN32 AND NOT __ANDROID__)
   enable_language(RC)
   list(APPEND BASE_SRCS builds/windows/ftdebug.c
                         src/base/ftver.rc)
@@ -388,7 +388,7 @@ if(${this_system_libraries})
 endif()
 
 
-if(${ANDROID})
+if(${__ANDROID__})
   target_link_libraries(${PROJECT_NAME} PRIVATE log)
 endif()
 #

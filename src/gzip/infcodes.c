@@ -71,7 +71,10 @@ z_streamp z )
     c->dbits = (Byte)bd;
     c->ltree = tl;
     c->dtree = td;
+#if !defined(__ANDROID__)
+
     Tracev((stderr, "inflate:       codes new\n"));
+#endif
   }
   return c;
 }
@@ -127,9 +130,12 @@ int r )
       if (e == 0)               /* literal */
       {
         c->sub.lit = t->base;
+#if !defined(__ANDROID__)
+
         Tracevv((stderr, t->base >= 0x20 && t->base < 0x7f ?
                  "inflate:         literal '%c'\n" :
                  "inflate:         literal 0x%02x\n", t->base));
+#endif
         c->mode = LIT;
         break;
       }
@@ -148,7 +154,10 @@ int r )
       }
       if (e & 32)               /* end of block */
       {
+#if !defined(__ANDROID__)
+
         Tracevv((stderr, "inflate:         end of block\n"));
+#endif
         c->mode = WASH;
         break;
       }
@@ -163,7 +172,10 @@ int r )
       DUMPBITS(j)
       c->sub.code.need = c->dbits;
       c->sub.code.tree = c->dtree;
+#if !defined(__ANDROID__)
+
       Tracevv((stderr, "inflate:         length %u\n", c->len));
+#endif
       c->mode = DIST;
       /* fall through */
     case DIST:          /* i: get distance next */
@@ -194,7 +206,10 @@ int r )
       NEEDBITS(j)
       c->sub.copy.dist += (uInt)b & inflate_mask[j];
       DUMPBITS(j)
+#if !defined(__ANDROID__)
+
       Tracevv((stderr, "inflate:         distance %u\n", c->sub.copy.dist));
+#endif
       c->mode = COPY;
       /* fall through */
     case COPY:          /* o: copying bytes in window, waiting for space */
@@ -219,7 +234,10 @@ int r )
     case WASH:          /* o: got eob, possibly more output */
       if (k > 7)        /* return unused byte, if any */
       {
+#if !defined(__ANDROID__)
+
         Assert(k < 16, "inflate_codes grabbed too many bytes")
+#endif
         k -= 8;
         n++;
         p--;            /* can always return one */
@@ -250,5 +268,7 @@ inflate_codes_statef *c,
 z_streamp z )
 {
   ZFREE(z, c);
+#if !defined(__ANDROID__)
   Tracev((stderr, "inflate:       codes free\n"));
+#endif
 }

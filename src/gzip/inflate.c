@@ -60,7 +60,9 @@ z_streamp z )
   z->msg = Z_NULL;
   z->state->mode = z->state->nowrap ? BLOCKS : METHOD;
   inflate_blocks_reset(z->state->blocks, z, Z_NULL);
+#if !defined(__ANDROID__)
   Tracev((stderr, "inflate: reset\n"));
+#endif
   return Z_OK;
 }
 
@@ -74,7 +76,9 @@ z_streamp z )
     inflate_blocks_free(z->state->blocks, z);
   ZFREE(z, z->state);
   z->state = Z_NULL;
-  Tracev((stderr, "inflate: end\n"));
+#if !defined(__ANDROID__)
+   Tracev((stderr, "inflate: end\n"));
+#endif
   return Z_OK;
 }
 
@@ -128,8 +132,9 @@ int stream_size )
     inflateEnd(z);
     return Z_MEM_ERROR;
   }
+#if !defined(__ANDROID__)
   Tracev((stderr, "inflate: allocated\n"));
-
+#endif
   /* reset state */
   inflateReset(z);
   return Z_OK;
@@ -185,7 +190,9 @@ int f )
         z->state->sub.marker = 5;       /* can't try inflateSync */
         break;
       }
-      Tracev((stderr, "inflate: zlib header ok\n"));
+#if !defined(__ANDROID__)
+        Tracev((stderr, "inflate: zlib header ok\n"));
+#endif
       if (!(b & PRESET_DICT))
       {
         z->state->mode = BLOCKS;
@@ -266,7 +273,9 @@ int f )
         z->state->sub.marker = 5;       /* can't try inflateSync */
         break;
       }
-      Tracev((stderr, "inflate: zlib check ok\n"));
+#if !defined(__ANDROID__)
+        Tracev((stderr, "inflate: zlib check ok\n"));
+#endif
       z->state->mode = DONE;
       /* fall through */
     case DONE:
