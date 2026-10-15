@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.16)
 project(freetype C)
 
+if(__REACTOS__)
+    set(BUILD_SHARED_LIBS ON)
+    set(DISABLE_FORCE_DEBUG_POSTFIX ON)
+endif()
+
 if (NOT CMAKE_VERSION VERSION_LESS 3.3)
   # Allow symbol visibility settings also on static libraries. CMake < 3.3
   # only sets the property on a shared library build.
